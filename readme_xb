@@ -1,0 +1,29 @@
+vdpa mgmtdev show
+vdpa/vdpa.c -> main
+    vdpa = vdpa_alloc()
+        vdpa->indent = alloc_indent_mem()
+    vdpa_init(vdpa)
+        mnlu_gen_socket_open(&vdpa->nlg, VDPA_GENL_NAME, VDPA_GENL_VERSION)
+            nlg->nl = mnlu_socket_open(NETLINK_GENERIC)
+        new_json_obj_plain(vdpa->json_output)
+            _jw = jsonw_new(stdout)
+            jsonw_pretty(_jw, true)
+    vdpa_cmd(vdpa, argc, argv)
+        cmd_mgmtdev(vdpa, argc - 1, argv + 1)
+            cmd_mgmtdev_show(vdpa, argc - 1, argv + 1)
+                mnlu_gen_socket_cmd_prepare(&vdpa->nlg, VDPA_CMD_MGMTDEV_GET, flags)
+                mnlu_gen_socket_sndrcv(&vdpa->nlg, nlh, cmd_mgmtdev_show_cb, vdpa)
+        or cmd_dev(vdpa, argc - 1, argv + 1)
+
+vdpa dev add mgmtdev vdpasim_net name foo2
+
+
+enum vdpa_command {
+	VDPA_CMD_UNSPEC,
+	VDPA_CMD_MGMTDEV_NEW,
+	VDPA_CMD_MGMTDEV_GET,		/* can dump */
+	VDPA_CMD_DEV_NEW,
+	VDPA_CMD_DEV_DEL,
+	VDPA_CMD_DEV_GET,		/* can dump */
+};
+
